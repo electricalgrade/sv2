@@ -1,6 +1,8 @@
-# DATUM Gateway ↔ Pool Protocol (Formal Spec, v0.4.0-beta)
+# DATUM Gateway ↔ Pool Protocol ( Spec, v0.4.0-beta)
 
-> Scope: this document specifies the transport, framing, cryptography, state machine, and message formats used between a **DATUM Gateway** (client) and a **Pool** (server). It reflects the behavior implemented in `datum_gateway` v0.4.0-beta.
+> Scope: this document specifies the transport, framing, cryptography, state machine, and message formats used between a **DATUM Gateway** (client) and a **Pool** (server). It reflects the behavior implemented in `datum_gateway` v0.4.0-beta. 
+
+**This is not Official version.**
 
 This spec uses **normative** “MUST/SHOULD/MAY” language.
 
