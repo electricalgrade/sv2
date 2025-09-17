@@ -9,6 +9,7 @@
 #include "sv2_noise.h"
 #include "sv2_wire.h"
 #include "sv2_common.h"
+#include "mining_dispatch.h"
 
 
 /* --------------- tiny net helpers --------------- */
@@ -154,6 +155,8 @@ int main(int argc, char **argv) {
         }
         printf("[pool] sent SetupConnection.Success (version=%u flags=0x%08x)\n",
        ok.used_version, ok.flags);
+       /* enter minimal mining loop (plaintext frames for now) */
+        mining_run_after_setup(cfd);
         sv2_noise_free(sv);
         close(cfd);
     }

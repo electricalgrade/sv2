@@ -15,17 +15,25 @@ BIN_DIR   := $(BUILD_DIR)/bin
 # SV2 wire/common (use your existing sources here)
 SV2_SRC := \
   sv2_src/sv2/sv2_wire.c \
-  sv2_src/sv2/sv2_common.c
+  sv2_src/sv2/sv2_common.c \
+  sv2_src/sv2/sv2_mining.c
 
 SV2_HDR := \
   sv2_src/sv2/sv2_wire.h \
-  sv2_src/sv2/sv2_common.h
+  sv2_src/sv2/sv2_common.h \
+  sv2_src/sv2/sv2_mining.h
 
 # Noise wrapper
 NOISE_SRC := \
-  src/sv2_noise.c
+  src/sv2_noise.c 
 NOISE_HDR := \
-  src/sv2_noise.h
+  src/sv2_noise.h 
+
+
+# Mining dispatcher (server-side loop after SetupConnection)
+MINING_SRC := src/mining_dispatch.c
+MINING_HDR := src/mining_dispatch.h
+MINING_OBJ := $(MINING_SRC:%.c=$(OBJ_DIR)/%.o)
 
 # Apps
 APP_SERVER := src/sv2_pool_server.c
@@ -54,11 +62,11 @@ $(OBJ_DIR)/sv2_src/sv2:
 	@mkdir -p $@
 
 # Compile rules
-$(OBJ_DIR)/%.o: %.c $(SV2_HDR) $(NOISE_HDR) | $(OBJ_DIR) $(OBJ_DIR)/src $(OBJ_DIR)/sv2_src $(OBJ_DIR)/sv2_src/sv2
+$(OBJ_DIR)/%.o: %.c $(SV2_HDR) $(NOISE_HDR) $(MINING_HDR) |  $(OBJ_DIR) $(OBJ_DIR)/src $(OBJ_DIR)/sv2_src $(OBJ_DIR)/sv2_src/sv2
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 # Link apps
-$(POOL_SERVER): $(SERVER_OBJ) $(NOISE_OBJ) $(SV2_OBJ) | $(BIN_DIR)
+$(POOL_SERVER): $(SERVER_OBJ) $(NOISE_OBJ) $(SV2_OBJ) $(MINING_OBJ) | $(BIN_DIR) 
 	$(CC) -o $@ $^ $(LDFLAGS) $(LDLIBS)
 
 $(NOISE_CLIENT): $(CLIENT_OBJ) $(SV2_OBJ) $(NOISE_OBJ)| $(BIN_DIR) 

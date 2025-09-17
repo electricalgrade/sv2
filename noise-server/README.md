@@ -186,3 +186,70 @@ This demo doesn’t yet encrypt transport frames with the post-split cipherstate
 ---
 
 
+
+## Roadmap / TODO
+
+This repo is just the foundation (Noise handshake + `SetupConnection`). Next milestones:
+
+### Encode/Decode layer
+
+* [x] Add `SV2_EXT_MINING` and message IDs
+* [x] Implement codecs for:
+
+  * `OpenStandardMiningChannel` (dec)
+  * `OpenStandardMiningChannelSuccess` (enc)
+  * `NewMiningJob` (enc)
+  * `SetNewPrevHash` (enc)
+  * `SetTarget` (enc, U256)
+  * `SubmitSharesStandard` (dec)
+  * `SubmitSharesSuccess` (enc)
+  * `SubmitSharesError` (enc)
+
+### Connection & dispatcher
+
+* [x] After `SetupConnection.Success`, switch socket into mining dispatcher
+* [x] `mining_dispatch.[ch]`: read frames, route by `(ext,msg_type)`, send responses
+
+### Mining context (per-connection state)
+
+* [ ] `mining_ctx.{h,c}`: track channel IDs, extranonce prefixes, job store, vardiff state, share counters
+* [ ] Implement `handle_open_standard(...)` and `handle_submit_shares_standard(...)`
+* [ ] Hooks for `on_new_template(...)` and `on_new_prev_hash(...)`
+
+### Datum bridge (backend integration)
+
+* [ ] `datum_bridge.{h,c}`:
+
+  * Subscribe to new templates → fan-out `NewMiningJob`
+  * Subscribe to prevhash updates → fan-out `SetNewPrevHash`
+  * `submit_share_standard(...)` → forward to backend; return acceptance, counters, reason strings
+
+### Factories & accounting
+
+* [ ] Channel ID generator (u32 monotonic)
+* [ ] Extranonce prefix factory (≤32 bytes, unique per conn)
+* [ ] Minimal share accounting (track last seq, accepted count, work sum)
+* [ ] Job store (template → job\_id mapping, active job cache)
+
+### Vardiff
+
+* [ ] MVP: static target only
+* [ ] Later: background loop → recompute per-conn target every 60s, send `SetTarget`
+
+### Tests
+
+* [ ] Unit tests for all codecs (round-trip, boundary)
+* [ ] Integration: fake miner opens channel → server replies with success/job → miner submits share → server replies with success/error
+* [ ] Live miner smoke test
+
+### Phase-1 acceptance
+
+* Real miner connects over Noise, completes `SetupConnection`
+* Opens Standard channel, receives future job + activation
+* Submits shares → pool responds with Success and counters update in datum bridge
+* Reconnect works cleanly with fresh job + channel state
+
+
+
+
+
