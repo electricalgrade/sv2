@@ -96,7 +96,6 @@ See its [README.md](noise-server/README.md) for build instructions, usage, and T
 - 🚧 Client mining messages (`OpenStandardMiningChannel`, `SubmitSharesStandard`) next
 - 🚧 Datum bridge integration planned
 - ⏳ Vardiff, accounting, and live miner tests pending
-```
 
 
 
