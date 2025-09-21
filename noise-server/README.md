@@ -1,5 +1,4 @@
 
-
 # SV2 Noise Handshake (XX/NX) + Minimal SetupConnection
 
 This repo provides a tiny Stratum V2 “pool server” and a matching client that:
@@ -14,16 +13,20 @@ The code is intentionally small and dependency-light so we can iterate quickly a
 ## Contents
 
 ```
+
 src/
-  sv2_pool_server.c      # server: Noise handshake + SV2 SetupConnection responder
-  noise_client.c         # client: Noise handshake + SV2 SetupConnection initiator
-  sv2_noise.c            # Noise wrapper (server+client helpers)
-  sv2_noise.h
-sv2_src/sv2/
-  sv2_wire.c/.h          # tiny SV2 frame helpers (len-prefixed + frame builder/parser)
-  sv2_common.c/.h        # minimal SetupConnection encode/decode
+sv2\_pool\_server.c      # server: Noise handshake + SV2 SetupConnection responder
+noise\_client.c         # client: Noise handshake + SV2 SetupConnection initiator
+sv2\_noise.c            # Noise wrapper (server+client helpers)
+sv2\_noise.h
+mining\_dispatch.c/.h   # minimal mining dispatcher (post-SetupConnection)
+sv2\_src/sv2/
+sv2\_wire.c/.h          # tiny SV2 frame helpers (len-prefixed + frame builder/parser)
+sv2\_common.c/.h        # minimal SetupConnection encode/decode
+sv2\_mining.c/.h        # mining message structs + codecs
 Makefile
-```
+
+````
 
 ---
 
@@ -45,7 +48,7 @@ Makefile
 
 ```bash
 make clean && make -j
-```
+````
 
 Produced binaries:
 
@@ -185,8 +188,6 @@ This demo doesn’t yet encrypt transport frames with the post-split cipherstate
 
 ---
 
-
-
 ## Roadmap / TODO
 
 This repo is just the foundation (Noise handshake + `SetupConnection`). Next milestones:
@@ -196,14 +197,14 @@ This repo is just the foundation (Noise handshake + `SetupConnection`). Next mil
 * [x] Add `SV2_EXT_MINING` and message IDs
 * [x] Implement codecs for:
 
-  * `OpenStandardMiningChannel` (dec)
-  * `OpenStandardMiningChannelSuccess` (enc)
-  * `NewMiningJob` (enc)
-  * `SetNewPrevHash` (enc)
-  * `SetTarget` (enc, U256)
-  * `SubmitSharesStandard` (dec)
-  * `SubmitSharesSuccess` (enc)
-  * `SubmitSharesError` (enc)
+  * [x] `OpenStandardMiningChannel` (dec)
+  * [x] `OpenStandardMiningChannelSuccess` (enc)
+  * [x] `NewMiningJob` (enc)
+  * [x] `SetNewPrevHash` (enc)
+  * [x] `SetTarget` (enc, U256)
+  * [x] `SubmitSharesStandard` (dec)
+  * [x] `SubmitSharesSuccess` (enc)
+  * [x] `SubmitSharesError` (enc)
 
 ### Connection & dispatcher
 
@@ -220,9 +221,9 @@ This repo is just the foundation (Noise handshake + `SetupConnection`). Next mil
 
 * [ ] `datum_bridge.{h,c}`:
 
-  * Subscribe to new templates → fan-out `NewMiningJob`
-  * Subscribe to prevhash updates → fan-out `SetNewPrevHash`
-  * `submit_share_standard(...)` → forward to backend; return acceptance, counters, reason strings
+  * [ ] Subscribe to new templates → fan-out `NewMiningJob`
+  * [ ] Subscribe to prevhash updates → fan-out `SetNewPrevHash`
+  * [ ] `submit_share_standard(...)` → forward to backend; return acceptance, counters, reason strings
 
 ### Factories & accounting
 
@@ -244,12 +245,9 @@ This repo is just the foundation (Noise handshake + `SetupConnection`). Next mil
 
 ### Phase-1 acceptance
 
-* Real miner connects over Noise, completes `SetupConnection`
-* Opens Standard channel, receives future job + activation
-* Submits shares → pool responds with Success and counters update in datum bridge
-* Reconnect works cleanly with fresh job + channel state
-
-
-
+* [x] Noise + SetupConnection works
+* [ ] Client opens Standard channel and receives future job + activation
+* [ ] Submits shares → pool responds with Success and counters update in datum bridge
+* [ ] Reconnect works cleanly with fresh job + channel state
 
 
